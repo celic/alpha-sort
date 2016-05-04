@@ -1,23 +1,35 @@
 import random
 import argparse
-import math
 
 def generate_alpha_approx_list(size, alpha, out_file):
+	
+	# Check alpha value
 	if not 0 <= alpha <= 1:
 		raise ValueError("Alpha must be between 0 and 1")
 
-	num_swaps = math.floor(alpha*size)
+	# Helpful intializations
 	modifier = 1
 	prev_val = 0
 
+	# Generate values
 	for i in xrange(size):
+
+		# If prob is less than alpha, add the value
 		prob = random.random()
 		if prob <= alpha:
 			modifier = 1
+
+		# If prob is greater than alpha, subtract the value
 		else:
 			modifier = -1
+
+		# Determine value
 		val = (modifier * random.randint(1, 5)) + prev_val
+		
+		# Let's keep things postiive
 		if val < 0: val = 0
+
+		# Write and set up next iteration
 		out_file.write(str(val) + "\n")
 		prev_val = val
 
