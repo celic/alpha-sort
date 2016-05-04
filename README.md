@@ -10,3 +10,11 @@ Your manager wants an algorithm that given the above input, outputs `YES` or `NO
 
 It is beneficial to provide a theoretical analysis and an experimental one (ONLY ON DATA OF SIZE `1bil` OR LARGER). 
 
+Generating lists
+----------------
+
+Navigate over to `python/` and run the following:
+
+    python generate_alpha_list.py <size> <alpha> <outputfile>
+
+I recommend naming your output files as `<some-list>.list` as the `.gitignore` catches those to prevent 4GB uploads. 
