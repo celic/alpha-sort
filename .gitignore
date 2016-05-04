@@ -1,1 +1,5 @@
+# Mac specific files
 .DS_Store
+
+# Lists themselves should be around 4GB in size. 
+*.list
