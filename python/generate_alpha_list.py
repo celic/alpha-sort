@@ -11,7 +11,7 @@ def generate_alpha_approx_list(size, alpha, out_file):
 	modifier = 1
 	prev_val = 0
 
-	# Generate values
+	# Generate values in linear time
 	for i in xrange(size):
 
 		# If prob is less than alpha, add the value
@@ -24,14 +24,15 @@ def generate_alpha_approx_list(size, alpha, out_file):
 			modifier = -1
 
 		# Determine value
-		val = (modifier * random.randint(1, 5)) + prev_val
+		r = random.randint(1, 5)
+		val = prev_val + (modifier * r)
 		
 		# Let's keep things postiive
 		if val < 0: val = 0
 
 		# Write and set up next iteration
 		out_file.write(str(val) + "\n")
-		prev_val = val
+		prev_val = val + r # done on purpose for specific corner cases in structure 
 
 if __name__ == "__main__":
 
@@ -46,7 +47,7 @@ if __name__ == "__main__":
 	out_file_name = args.file
 
 	# Create output file
-	out_file = open(out_file_name, "w+")
+	out_file = open(out_file_name, "w")
 
 	# Generate list
 	generate_alpha_approx_list(size, alpha, out_file)
