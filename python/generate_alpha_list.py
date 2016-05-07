@@ -30,9 +30,12 @@ def generate_alpha_approx_list(size, alpha, out_file):
 		# Let's keep things postiive
 		if val < 0: val = 0
 
+		# Pad numbers to 1,000,000,000 (10 digits)
+		str_val = str(val).rjust(10, '0')
+
 		# Write and set up next iteration
-		out_file.write(str(val) + "\n")
-		prev_val = val + r # done on purpose for specific corner cases in structure 
+		out_file.write(str_val + "\n")
+		prev_val = val
 
 if __name__ == "__main__":
 

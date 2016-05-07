@@ -17,6 +17,6 @@ Navigate over to `python/` and run the following:
 
     python generate_alpha_list.py <size> <alpha> <outputfile>
 
-I recommend naming your output files as `<some-list>.list` as the `.gitignore` catches those to prevent 4GB uploads. 
+I recommend naming your output files as `<some-list>.list` as the `.gitignore` catches those to prevent 10GB uploads. 
 
-If you want to easily generate a bunch of lists, we provide a `Makefile` to so do. It generates 4 lists, 2 good and 2 bad (provided that `α = .9` is the cut-off). Just run `make` in the `python/` directory. 
+If you want to easily generate a bunch of lists, we provide a `Makefile` to so do. It generates 2 lists, 1 good and 1 bad (provided that `α = .9` is the cut-off). Just run `make` in the `python/` directory. 
