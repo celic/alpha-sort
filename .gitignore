@@ -1,5 +1,8 @@
 # Mac specific files
 .DS_Store
 
-# Lists themselves should be around 4GB in size. 
+# Lists themselves should be around 10GB in size. 
 *.list
+
+# Python compiled files
+*.pyc
