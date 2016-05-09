@@ -1,0 +1,123 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, geometry, enumerate, algorithm2e}
+\geometry{margin=1.5in}
+\setlength{\textheight}{8.75in} \setlength{\topmargin}{-.2in}
+\setlength{\headheight}{.2in} \setlength{\headsep}{0in}
+
+\begin{document}
+\begin{titlepage}
+	\begin{center}
+		\vspace*{1in}	
+		\Huge
+		\textbf{Verification of $\alpha$-Approximately-Sorted Lists}
+		\vspace{.5in}
+		
+		\Large
+		\text{Randomized Algorithms Final} \\
+		\text{Spring 2016}
+		
+		\vspace{1.5in}
+		
+		\textbf{Chris Celi \\ Mark Westerhoff}
+	\end{center}
+\end{titlepage}
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Introduction}
+
+In this paper we present an algorithm that verifies a (potentially large) list of integers is $\alpha$-approximately-sorted ($\alpha$AS). As no clear definition to what precisely 'sorted' means, we present one as well. 
+
+A list $L = \{a_1, a_2, ..., a_n\}$ is perfectly sorted if for all $i \in [2, n]$, $a_{i-1} \leq a_i$. Consequently a list of size 1 is always sorted so the case where $i = 1$ is ignored. Intuitively this boils down to if each element must be increased to reach the next element (including an increase of zero) then the list is perfectly sorted. 
+
+A more interesting case however is when a list is $\alpha$AS. A list $L = \{b_1, b_2, ..., b_n\}$ is $\alpha$AS sorted for some $\alpha$ such that $0 \leq \alpha \leq 1$, if for all $i \in [2, n]$, $\Pr[b_{i-1} \leq b_i] \geq \alpha$. Thus a perfectly sorted list is also $\alpha$AS when $\alpha = 1$. Providing some more intuition, the probability that each element is greater than or equal to element prior is lower bounded by $\alpha$. We operate with this assumption as a definition for the design of the algorithm. 
+
+\subsection{Problem Analysis}
+
+Simply verifying if a list is $\alpha$AS is infeasible to do linearly (in accordance with the definition provided) when the list is on the scale of several billion elements. Instead we take a randomized approach to the problem in order so break down the task at hand. 
+
+Suppose we are provided a list $L = \{a_1, a_2, ..., a_n\}$ where $n \geq 10^9$, and some $\alpha$ where $0 \leq \alpha \leq 1$. Then we define a collection of $n-1$ variables $X_1, ..., X_{n-1}$ to be a metric for if each sequential pair of terms in the list is sorted. Thus we define $X_i$ as
+$$X_i = 
+\begin{cases}
+	1 & a_{i-1} \leq a_i \\
+	0 & \text{ otherwise}
+\end{cases}$$
+and as a result if we let $X = \sum X_i$, then $X$ is a metric for the sorted nature of the entire list. This presents an easy way to verify if a list is $\alpha$AS by having the algorithm return true when $E[X] \geq \lceil \alpha n \rceil$ and false when $E[X] < \lceil \alpha n \rceil$.
+
+Instead of checking each term linearly, we can approximate $E[X]$ using randomized means. 
+
+\section{Algorithm}
+
+We can approximate $E[X]$ using a Monte Carlo method. We sample from $X$ which is easily computed in sub-linear time based on $L$. This is done by pulling out only the two necessary numbers and seeing which case of $X_i$ applies. Naturally we are able to sample from $X$ uniformly and at random and do not need to generate the full list to determine any $X_i$. Using Monte Carlo, and a sample of size $k$, we know that $E[X] = n \sum\limits^k_{i=1} \frac{X_i}{k}$. (FROM BOOK PAGE 311). 
+
+\subsection{Assumptions}
+
+We however need a couple of assumptions about the input in order to be allowed some of these theoretical assurances. They are as follows:
+
+\begin{enumerate}
+\item The input must be provided as a file where each number is padded (with zeros perhaps) to ensure that each number is the same length. This allows us to use offsets when seeking the file to jump quickly and accurately to specific values of $a_i$. In other words, access to $a_i$ is desired to be constant time (i.e. a quick offset calculation and jump to location in a file). This is a strict requirement. 
+
+\item The input file must be large. The Monte Carlo method works best on larger input sizes, and so we require that $n \geq 10^9$. This is just a recommendation.
+
+\item The desired value for $\alpha$ is known and is relatively close to $1$. Later we will derive a sample size based on $\alpha$ which scales best with larger sizes of $\alpha$. For this algorithm and testing we say that we are looking for an $\alpha \approx .9$. We have not tested the algorithm when $\alpha$ was significantly lower. It is important that the lists tested be relatively close to $\alpha$ sorted as the theory depends on it. 
+\end{enumerate}
+
+\subsection{Specification}
+
+\begin{algorithm}[H]
+	\KwData{A file of $n$ integers to be verified, $\alpha$, $\epsilon$, and $\delta$.}
+	\KwResult{True if the list is $\alpha$AS, false otherwise.}
+ 
+ 	load file\;
+ 	$k = \frac{4}{\epsilon^2 \alpha} \ln \frac{2}{\delta}$\;
+	$sum = 0$\; 
+ 
+ 	\For{i from 1 to $k$}{
+ 	
+ 		$x = \text{random index of a value pair with replacement}$\;
+ 		$v_1, v_2 = \text{get sequential value pair for } x$\;
+ 		
+ 		\If{$v_1 \leq v_2$}{
+ 			$sum++$\;
+ 		}
+ 	}
+ 	
+ 	\eIf{$(sum \div k \times n) \geq \alpha n$}{
+ 		\Return True\;
+ 	}{
+ 		\Return False\;
+ 	}
+ 	\caption{A Monte Carlo-based verification algorithm for $\alpha$AS lists.}
+\end{algorithm}
+
+\subsection{Runtime Analysis}
+
+As we mentioned, with the given assumptions, loading the file and retrieving each pair from the file is considered $O(1)$. Thus the algorithm is trivially $O(k)$ and scales with the size of the sample set used. 
+
+\section{Theoretical Analysis}
+
+Remember that the random variables $X_i$ have the Bernoulli distribution with parameter approximately $\alpha$. We will say that the true parameter is $\beta$. That is, the lowest value of $\alpha$ that would return true for the given list would be $\beta$. 
+
+Using the Estimator Theorem in (BOOK PG 311), with $\beta$ being the ratio of sorted elements to total elements, the Monte Carlo method yields an $\epsilon$-approximation to the number of sorted elements with probability at least $1-\delta$ given a sample size of size $$k \geq \frac{4}{\epsilon^2 \beta} \ln \frac{2}{\delta}.$$ 
+
+The result of this theorem is a bound on $E[X]$ as $$\Pr\left[ [(1-\epsilon)\beta n] \leq E[X] \leq [(1+\epsilon)\beta n] \right] \leq 1 - \delta.$$ where $\beta n$ refers to the true number of sorted pairs. Thus we have a method of estimating the true approximately sorted value of the given list. However, our sample size (which is independent of the total population size) depends on an unknown value $\beta$. From our third assumption we approximate $\beta$ with $\alpha$ which is known from the specification of the algorithm. 
+
+This leaves us with $$k \geq \frac{4}{\epsilon^2 \alpha} \ln \frac{2}{\delta}$$ where we commonly use $\alpha = .9$ for testing the algorithm. 
+
+\section{Experimental Analysis}
+
+sdfsd
+
+\section{Conclusion}
+
+sdfsdf
+
+\vspace{.15in}
+
+
+
+\end{document}
