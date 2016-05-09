@@ -52,7 +52,7 @@ Instead of checking each term linearly, we can approximate $E[X]$ using randomiz
 
 \section{Algorithm}
 
-We can approximate $E[X]$ using a Monte Carlo method. We sample from $X$ which is easily computed in sub-linear time based on $L$. This is done by pulling out only the two necessary numbers and seeing which case of $X_i$ applies. Naturally we are able to sample from $X$ uniformly and at random and do not need to generate the full list to determine any $X_i$. Using Monte Carlo, and a sample of size $k$, we know that $E[X] = n \sum\limits^k_{i=1} \frac{X_i}{k}$ from Motwani and Raghavan \cite{textbook}. 
+We can approximate $E[X]$ using a Monte Carlo method. We sample from $X$ which is easily computed in sub-linear time based on $L$. This is done by pulling out only the two necessary numbers and seeing which case of $X_i$ applies. Naturally we are able to sample from $X$ uniformly and at random and do not need to generate the full list to determine any $X_i$. Using Monte Carlo, and a sample of size $k$, we know that $E[X] = n \sum\limits^k_{i=1} \frac{X_i}{k}$ from Motwani and Raghavan \cite{textbook}. We devise an algorithm to approximate $E[X]$ as our $\alpha$-estimate and compare that value to the provided $\alpha$. 
 
 \subsection{Assumptions}
 
@@ -86,11 +86,9 @@ We however need a couple of assumptions about the input in order to be allowed s
  		}
  	}
  	
- 	\eIf{$(sum \div k \times n) \geq \alpha n$}{
- 		\Return True\;
- 	}{
- 		\Return False\;
- 	}
+ 	$\alpha$-estimate = sum $\div$ $k$\;
+ 	\Return ($\alpha$-estimate $\geq \alpha$)\;
+ 	\vspace{.15in}
  	\caption{A Monte Carlo-based verification algorithm for $\alpha$AS lists.}
 \end{algorithm}
 
@@ -104,15 +102,17 @@ Remember that the random variables $X_i$ have the Bernoulli distribution with pa
 
 Using the Estimator Theorem from Motwani and Raghavan \cite{textbook}, with $\beta$ being the ratio of sorted elements to total elements, the Monte Carlo method yields an $\epsilon$-approximation to the number of sorted elements with probability at least $1-\delta$ given a sample size of size $$k \geq \frac{4}{\epsilon^2 \beta} \ln \frac{2}{\delta}.$$ 
 
-The result of this theorem is a bound on $E[X]$ as $$\Pr\left[ [(1-\epsilon)\beta n] \leq E[X] \leq [(1+\epsilon)\beta n] \right] \leq 1 - \delta.$$ where $\beta n$ refers to the true number of sorted pairs. Thus we have a method of estimating the true approximately sorted value of the given list. However, our sample size depends on an unknown value $\beta$. From our third assumption we approximate $\beta$ with $\alpha$ which is known from the specification of the algorithm. 
+The result of this theorem is a bound on $E[X]$ as $$\Pr\left[ [(1-\epsilon)\beta n] \leq E[X] \leq [(1+\epsilon)\beta n] \right] \leq 1 - \delta.$$ where $\beta n$ refers to the true number of sorted pairs. 
 
-This leaves us with $$k \geq \frac{4}{\epsilon^2 \alpha} \ln \frac{2}{\delta}$$ where we commonly use $\alpha = .9$ for testing the algorithm. It is rather important to note that $k$ is not dependent on $n$ in any way. Thus this algorithm scales well especially on larger inputs.
+We can simplify this further by removing the factor of $n$ from each term to yield $$\Pr\left[ [(1-\epsilon)\beta] \leq \alpha \leq [(1+\epsilon)\beta] \right] \leq 1 - \delta.$$
 
-The algorithm verifies whether or not a list is $\alpha$AS with probability $1 - \delta$. As $k$ is very dependent on $\delta$, we can use rather large values of $\delta$ (for example $\delta = .25$) and boost the resulting probability to the desired constant. 
+Thus we have a method of estimating the true approximately sorted value of the given list. However, our sample size depends on an unknown value $\beta$. From our third assumption we approximate $\beta$ with $\alpha$ which is known from the specification of the algorithm. A lower $\alpha$ value will lead to a drastically increased value for $k$ increasing the corresponding runtime. 
 
-This leaves us with two-sided error however. Going back to our probabilistic bounds, the probability that the algorithm produces output that matches the true result (whether that the list is $\alpha$AS or not $\alpha$AS) is $1 - \delta$. The probability that the algorithm is incorrect is thus $\delta$. 
+This leaves us with $$k \geq \frac{4}{\epsilon^2 \alpha} \ln \frac{2}{\delta}$$ where we commonly use $\alpha = .9$ for testing the algorithm. It is rather important to note that $k$ is not dependent on $n$ in any way. Thus this algorithm scales well, especially on larger inputs.
 
-We define success as the ability to accurately verify a list is $\alpha$AS or not $\alpha$AS. For example with $\delta = .25$, the probability of success running the algorithm once is $.75$. Running the algorithm twice yeilds $\delta^2 = .0625$ and thus the probability of success is $.9375$. Boosting the algorithm with $z$ iterations yields a probability of success of $1 - \delta^z$. This leads to a very confident result rather quickly. 
+The algorithm produces two-sided error however. Going back to our probabilistic bounds, the probability that the algorithm yields an $\alpha$-estimate that is within $\epsilon$ of $\beta$ is $1 - \delta$. We can then compare the produced $\alpha$-estimate to the verification metric ($\alpha$) provided from the onset. 
+
+The algorithm though needs to verify whether or not a list is $\alpha$AS. This can be done by requiring a small $\epsilon$ to tighten the window for our $\alpha$-estimate. The $\alpha$-estimate can also be tightened by boosting the algorithm with multiple iterations. By running the algorithm $i$ times, we see that the probability that $\alpha$-estimate is within $\epsilon$ of $\beta$ is $1 - \delta^i$. Depending on the relaxation of runtime, the result can be boosted to the desired constant. Even with large $\delta$ values, (such as $\delta = .25$) the rate at which $1 - \delta^i$ converges to $1$ is very quickly. Thus not many iterations are required. This leads to a very confident result rather quickly.s
 
 \section{Experimental Analysis}
 
