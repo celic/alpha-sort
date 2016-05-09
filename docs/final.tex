@@ -110,9 +110,9 @@ This leaves us with $$k \geq \frac{4}{\epsilon^2 \alpha} \ln \frac{2}{\delta}$$ 
 
 The algorithm verifies whether or not a list is $\alpha$AS with probability $1 - \delta$. As $k$ is very dependent on $\delta$, we can use rather large values of $\delta$ (for example $\delta = .25$) and boost the resulting probability to the desired constant. 
 
-We define success as the 
+This leaves us with two-sided error however. Going back to our probabilistic bounds, the probability that the algorithm produces output that matches the true result (whether that the list is $\alpha$AS or not $\alpha$AS) is $1 - \delta$. The probability that the algorithm is incorrect is thus $\delta$. 
 
-For example with $\delta = .25$, the probability of success running the algorithm once is $.75$. Running the algorithm twice yeilds $\delta^2 = .0625$ and thus the probability of success is $.9375$. Boosting the algorithm with $z$ iterations yields a probability of success of $1 - \delta^z$. This leads to a very confident result rather quickly. 
+We define success as the ability to accurately verify a list is $\alpha$AS or not $\alpha$AS. For example with $\delta = .25$, the probability of success running the algorithm once is $.75$. Running the algorithm twice yeilds $\delta^2 = .0625$ and thus the probability of success is $.9375$. Boosting the algorithm with $z$ iterations yields a probability of success of $1 - \delta^z$. This leads to a very confident result rather quickly. 
 
 \section{Experimental Analysis}
 

@@ -16,7 +16,7 @@ def test(file_name, iterations, alpha, size, delta, error, timeIO):
 	avg = sum(average)/float(len(average))
 
 	if io_time > 0:
-		print "IO time: %2.2fs" % (io_time)
+		print "IO time: %.2fs" % (io_time)
 	return (float(results.count(True)) / float(iterations)), avg
 
 if __name__ == '__main__':
@@ -42,4 +42,4 @@ if __name__ == '__main__':
 	for i in xrange(1):
 		print test(file, iterations, alpha, size, delta, error, timeIO)
 	end = time.clock()
-	print "Total time: %2.2fs" % (end - start)
+	print "Total time: %.2fs" % (end - start)

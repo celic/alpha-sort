@@ -32,6 +32,6 @@ The size of the list is assumed to be 1 billion. This python script will output 
 
 The other method of running the algorithm allows you to boost the success rate at the cost of runtime. This is by running:
 
-    python aggregate_test.py 
+    python aggregate_test.py <inputfile> [-h] [-a ALPHA] [-i ITERATIONS] [-d DELTA] [-e ERROR] [-n SIZE] [-t TIMEIO]
 
-For simplicity, the alpha value, the filename and the number of iterations to boost the probability are hardcoded. This script outputs the ratio of `True`s outputted from the algorithm to the total number of runs along with the estimated `α` value.
+For simplicity, many of these values have defaults. They are as follows: `ALPHA = .9, ITERATIONS = 10, DELTA = .25, ERROR = .1, SIZE = 1000000000, TIMEIO = False`. This script outputs the ratio of `True`s outputted from the algorithm to the total number of runs along with the estimated `α` value.
