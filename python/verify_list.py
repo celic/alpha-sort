@@ -1,9 +1,10 @@
 import random
 import argparse
 import math
+import time
 import seek_list
 
-def verify(file_name, alpha=0.9, n=1000000000, delta=0.25, error=0.1):
+def verify(file_name, alpha=0.9, n=1000000000, delta=0.25, error=0.1, timeIO=False):
 
 	# Load file
 	in_file = open(file_name, 'r')
@@ -15,19 +16,26 @@ def verify(file_name, alpha=0.9, n=1000000000, delta=0.25, error=0.1):
 	# This is roughly 925 samples. epsilon is .1, and delta is .25, 5 iterations, 1 min 40sec, 100% accuracy
 	sum = 0
 
+	io_time = 0
 	# Monte Carlo over k samples
 	for i in xrange(k):
 
 		# Determine sample
 		index = random.randint(1, n-1)
-		values = seek_list.read_pair(index, in_file)
+		if timeIO:
+			start = time.clock()
+			values = seek_list.read_pair(index, in_file)
+			end = time.clock()
+			io_time += end - start
+		else:
+			values = seek_list.read_pair(index, in_file)
 
 		# Check result
 		if values[0] <= values[1]:
 			sum += 1
 
 	# Return estimated alpha
-	return ((sum / float(k)), ((sum / float(k)) >= alpha))
+	return ((sum / float(k)), ((sum / float(k)) >= alpha)), io_time
 
 if __name__ == '__main__':
 
