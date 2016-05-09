@@ -1,7 +1,7 @@
 import random
 import argparse
 
-def generate_alpha_approx_list(size, alpha, out_file):
+def generate_alpha_approx_list(size, alpha, out_file, print_iter=1000000):
 	
 	# Check alpha value
 	if not 0 <= alpha <= 1:
@@ -36,6 +36,10 @@ def generate_alpha_approx_list(size, alpha, out_file):
 		# Write and set up next iteration
 		out_file.write(str_val + "\n")
 		prev_val = val
+
+		# just printout to show that it is still doing something (useful for large files)
+		if i % print_iter == 0:
+			print "Finished number %d. %%%2.2f done." % (i, i/float(size)*100)
 
 if __name__ == "__main__":
 

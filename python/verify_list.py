@@ -1,19 +1,15 @@
 import random
 import argparse
 import math
-
 import seek_list
 
-def verify(alpha, file_name):
-
-	# We assume how large the file is, 1bil
-	n = 1000000000
+def verify(file_name, alpha=0.9, n=1000000000, delta=0.25, error=0.1):
 
 	# Load file
 	in_file = open(file_name, 'r')
 
 	# Determine k random indexes
-	k = int(math.ceil((4 / (.1**2 * alpha)) * math.log(2/.25)))
+	k = int(math.ceil((4 / (error**2 * alpha)) * math.log(2/delta)))
 	# This is roughly 5300 samples. epsilon is .05, and delta is .1, 50 iterations, 90 minutes, 100% accuracy
 	# This is roughly 925 samples. epsilon is .1, and delta is .25, 50 iterations, 15 minutes, 100% accuracy
 	# This is roughly 925 samples. epsilon is .1, and delta is .25, 5 iterations, 1 min 40sec, 100% accuracy
