@@ -38,7 +38,7 @@ A more interesting case however is when a list is $\alpha$AS. A list $L = \{b_1,
 
 \subsection{Problem Analysis}
 
-Simply verifying if a list is $\alpha$AS is infeasible to do linearly (in accordance with the definition provided) when the list is on the scale of several billion elements. Instead we take a randomized approach to the problem in order so break down the task at hand. 
+Simply verifying if a list is $\alpha$AS is infeasible to do linearly (in accordance with the definition provided) when the list is on the scale of several billion elements. Instead we take a randomized approach to the problem in order to break down the task at hand. 
 
 Suppose we are provided a list $L = \{a_1, a_2, ..., a_n\}$ where $n \geq 10^9$, and some $\alpha$ where $0 \leq \alpha \leq 1$. Then we define a collection of $n-1$ variables $X_1, ..., X_{n-1}$ to be a metric for if each sequential pair of terms in the list is sorted. Thus we define $X_i$ as
 $$X_i = 
@@ -104,9 +104,13 @@ Remember that the random variables $X_i$ have the Bernoulli distribution with pa
 
 Using the Estimator Theorem in (BOOK PG 311), with $\beta$ being the ratio of sorted elements to total elements, the Monte Carlo method yields an $\epsilon$-approximation to the number of sorted elements with probability at least $1-\delta$ given a sample size of size $$k \geq \frac{4}{\epsilon^2 \beta} \ln \frac{2}{\delta}.$$ 
 
-The result of this theorem is a bound on $E[X]$ as $$\Pr\left[ [(1-\epsilon)\beta n] \leq E[X] \leq [(1+\epsilon)\beta n] \right] \leq 1 - \delta.$$ where $\beta n$ refers to the true number of sorted pairs. Thus we have a method of estimating the true approximately sorted value of the given list. However, our sample size (which is independent of the total population size) depends on an unknown value $\beta$. From our third assumption we approximate $\beta$ with $\alpha$ which is known from the specification of the algorithm. 
+The result of this theorem is a bound on $E[X]$ as $$\Pr\left[ [(1-\epsilon)\beta n] \leq E[X] \leq [(1+\epsilon)\beta n] \right] \leq 1 - \delta.$$ where $\beta n$ refers to the true number of sorted pairs. Thus we have a method of estimating the true approximately sorted value of the given list. However, our sample size depends on an unknown value $\beta$. From our third assumption we approximate $\beta$ with $\alpha$ which is known from the specification of the algorithm. 
 
-This leaves us with $$k \geq \frac{4}{\epsilon^2 \alpha} \ln \frac{2}{\delta}$$ where we commonly use $\alpha = .9$ for testing the algorithm. 
+This leaves us with $$k \geq \frac{4}{\epsilon^2 \alpha} \ln \frac{2}{\delta}$$ where we commonly use $\alpha = .9$ for testing the algorithm. It is rather important to note that $k$ is not dependent on $n$ in any way. Thus this algorithm scales well especially on larger inputs.
+
+The algorithm verifies whether or not a list is $\alpha$AS with probability $1 - \delta$. As $k$ is very dependent on $\delta$, we can use rather large values of $\delta$ (for example $\delta = .25$) and boost the resulting probability to the desired constant. 
+
+For example with $\delta = .25$, the probability of success running the algorithm once is $.75$. Running the algorithm twice yeilds $\delta^2 = .0625$ and thus the probability of success is $.9375$. Boosting the algorithm with $z$ iterations yields a probability of success of $1 - \delta^z$. This leads to a very confident result rather quickly. 
 
 \section{Experimental Analysis}
 
