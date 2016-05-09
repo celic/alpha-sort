@@ -20,3 +20,18 @@ Navigate over to `python/` and run the following:
 I recommend naming your output files as `<some-list>.list` as the `.gitignore` catches those to prevent 10GB uploads. 
 
 If you want to easily generate a bunch of lists, we provide a `Makefile` to so do. It generates 2 lists, 1 good and 1 bad (provided that `α = .9` is the cut-off). Just run `make` in the `python/` directory. 
+
+Running the algorithm
+---------------------
+
+There are two ways to run the algorithm. The first is by running:
+
+    python verify_list.py <alpha> <inputfile>
+
+The size of the list is assumed to be 1 billion. This python script will output `True` or `False` after running the algorithm once.
+
+The other method of running the algorithm allows you to boost the success rate at the cost of runtime. This is by running:
+
+    python aggregate_test.py 
+
+For simplicity, the alpha value, the filename and the number of iterations to boost the probability are hardcoded. This script outputs the ratio of `True`s outputted from the algorithm to the total number of runs along with the estimated `α` value.
