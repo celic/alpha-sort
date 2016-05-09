@@ -52,21 +52,27 @@ Instead of checking each term linearly, we can approximate $E[X]$ using randomiz
 
 \section{Algorithm}
 
-We can approximate $E[X]$ using a Monte Carlo method. We sample from $X$ which is easily computed in sub-linear time based on $L$. This is done by pulling out only the two necessary numbers and seeing which case of $X_i$ applies. Naturally we are able to sample from $X$ uniformly and at random and do not need to generate the full list to determine any $X_i$. Using Monte Carlo, and a sample of size $k$, we know that $E[X] = n \sum\limits^k_{i=1} \frac{X_i}{k}$ from Motwani and Raghavan \cite{textbook}. We devise an algorithm to approximate $E[X]$ as our $\alpha$-estimate and compare that value to the provided $\alpha$. 
+We can approximate $E[X]$ using a Monte Carlo method. We sample from $X$ various values $X_i$ which are all easily computed in sub-linear time based on $L$. This is done by pulling out only the two necessary numbers for each $X_i$ selected and seeing which case $0$ or $1$ applies. Naturally we are able to sample from $X$ uniformly and at random and do not need to generate the full list to determine any $X_i$. Using a Monte Carlo method, and a sample of size $k$, we know that $E[X] = n \sum\limits^k_{i=1} \frac{X_i}{k}$ from Motwani and Raghavan \cite{textbook}. We devise an algorithm to approximate $E[X]$ as $\alpha$-estimate and compare that value to the provided $\alpha$. 
 
 \subsection{Assumptions}
 
-We however need a couple of assumptions about the input in order to be allowed some of these theoretical assurances. They are as follows:
+A few of assumptions are required concerning the input in order to be allowed some of the theoretical assurances discussed in this paper. They are as follows:
 
 \begin{enumerate}
-\item The input must be provided as a file where each number is padded (with zeros perhaps) to ensure that each number is the same length. This allows us to use offsets when seeking the file to jump quickly and accurately to specific values of $a_i$. In other words, access to $a_i$ is desired to be constant time (i.e. a quick offset calculation and jump to location in a file). This is a strict requirement. 
 
-\item The input file must be large. The Monte Carlo method works best on larger input sizes, and so we require that $n \geq 10^9$. This is just a recommendation.
+\item The input must be provided as a file where each number is padded (with zeros perhaps) to ensure that each number is the same length. This allows us to use offsets when seeking the file to jump quickly and accurately to specific values of $a_i$. In other words, access to $a_i$ is desired to be constant time (i.e. a quick offset calculation and jump to location in a file). This is a very strict requirement that directly affects the runtime of the algorithm. 
+
+\item The input file must be large. The Monte Carlo method works best on larger input sizes, and so we require that $n \geq 10^9$. In practice, we generate a $k$ sample size which is independent from $n$. Thus $n$ must be sufficiently large for the algorithm to make sense at all.
 
 \item The desired value for $\alpha$ is known and is relatively close to $1$. Later we will derive a sample size based on $\alpha$ which scales best with larger sizes of $\alpha$. For this algorithm and testing we say that we are looking for an $\alpha \approx .9$. We have not tested the algorithm when $\alpha$ was significantly lower. It is important that the lists tested be relatively close to $\alpha$ sorted as the theory depends on it. 
+
 \end{enumerate}
 
 \subsection{Specification}
+
+The algorithm is as follows. It is important to note that it is an $(\epsilon, \delta)$-fully polynomial-time randomized approximation scheme ($(\epsilon, \delta)$-FPRAS) like other Monte Carlo algorithms. 
+
+\vspace{.15in}
 
 \begin{algorithm}[H]
 	\KwData{A file of $n$ integers to be verified, $\alpha$, $\epsilon$, and $\delta$.}
@@ -112,7 +118,7 @@ This leaves us with $$k \geq \frac{4}{\epsilon^2 \alpha} \ln \frac{2}{\delta}$$ 
 
 The algorithm produces two-sided error however. Going back to our probabilistic bounds, the probability that the algorithm yields an $\alpha$-estimate that is within $\epsilon$ of $\beta$ is $1 - \delta$. We can then compare the produced $\alpha$-estimate to the verification metric ($\alpha$) provided from the onset. 
 
-The algorithm though needs to verify whether or not a list is $\alpha$AS. This can be done by requiring a small $\epsilon$ to tighten the window for our $\alpha$-estimate. The $\alpha$-estimate can also be tightened by boosting the algorithm with multiple iterations. By running the algorithm $i$ times, we see that the probability that $\alpha$-estimate is within $\epsilon$ of $\beta$ is $1 - \delta^i$. Depending on the relaxation of runtime, the result can be boosted to the desired constant. Even with large $\delta$ values, (such as $\delta = .25$) the rate at which $1 - \delta^i$ converges to $1$ is very quickly. Thus not many iterations are required. This leads to a very confident result rather quickly.s
+The algorithm though, needs to verify whether or not a list is $\alpha$AS. This can be done by requiring a small $\epsilon$ to tighten the window for our $\alpha$-estimate. The $\alpha$-estimate can also be tightened by boosting the algorithm with multiple iterations. By running the algorithm $i$ times, we see that the probability that $\alpha$-estimate is within $\epsilon$ of $\beta$ is $1 - \delta^i$. Depending on the relaxation of runtime, the result can be boosted to the desired constant. Even with large $\delta$ values, (such as $\delta = .25$) the rate at which $1 - \delta^i$ converges to $1$ is very fast. Thus not many iterations are required. This leads to a very confident result rather quickly.
 
 \section{Experimental Analysis}
 
