@@ -1,5 +1,8 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath, geometry, enumerate, algorithm2e}
+\usepackage{graphicx}
+\usepackage[toc]{hyperref}
+\usepackage[toc,page]{appendix}
 \geometry{margin=1.5in}
 \setlength{\textheight}{8.75in} \setlength{\topmargin}{-.2in}
 \setlength{\headheight}{.2in} \setlength{\headsep}{0in}
@@ -30,7 +33,7 @@
 
 \section{Introduction}
 
-In this paper we present an algorithm that verifies a (potentially large) list of integers is $\alpha$-approximately-sorted ($\alpha$AS). As no clear definition to what precisely 'sorted' means, we present one as well. 
+In this paper we present an algorithm that verifies a (potentially large) list of integers is $\alpha$-approximately-sorted ($\alpha$AS). As no clear definition to what precisely `sorted' means, we present one as well. 
 
 A list $L = \{a_1, a_2, ..., a_n\}$ is perfectly sorted if for all $i \in [2, n]$, $a_{i-1} \leq a_i$. Consequently a list of size 1 is always sorted so the case where $i = 1$ is ignored. Intuitively this boils down to if each element must be increased to reach the next element (including an increase of zero) then the list is perfectly sorted. 
 
@@ -64,7 +67,7 @@ A few of assumptions are required concerning the input in order to be allowed so
 
 \item The input file must be large. The Monte Carlo method works best on larger input sizes, and so we require that $n \geq 10^9$. In practice, we generate a $k$ sample size which is independent from $n$. Thus $n$ must be sufficiently large for the algorithm to make sense at all.
 
-\item The desired value for $\alpha$ is known and is relatively close to $1$. Later we will derive a sample size based on $\alpha$ which scales best with larger sizes of $\alpha$. For this algorithm and testing we say that we are looking for an $\alpha \approx .9$. We have not tested the algorithm when $\alpha$ was significantly lower. It is important that the lists tested be relatively close to $\alpha$ sorted as the theory depends on it. 
+\item The desired value for $\alpha$ is known and is relatively close to $1$. Later we will derive a sample size based on $\alpha$ which scales best with larger sizes of $\alpha$. For this algorithm and testing we say that we are looking for an $\alpha \approx .9$. We have not tested the algorithm when $\alpha$ was significantly lower. It is very important that the lists tested be relatively close to $\alpha$ sorted as the theory depends on it. 
 
 \end{enumerate}
 
@@ -112,22 +115,46 @@ The result of this theorem is a bound on $E[X]$ as $$\Pr\left[ [(1-\epsilon)\bet
 
 We can simplify this further by removing the factor of $n$ from each term to yield $$\Pr\left[ [(1-\epsilon)\beta] \leq \alpha \leq [(1+\epsilon)\beta] \right] \leq 1 - \delta.$$
 
-Thus we have a method of estimating the true approximately sorted value of the given list. However, our sample size depends on an unknown value $\beta$. From our third assumption we approximate $\beta$ with $\alpha$ which is known from the specification of the algorithm. A lower $\alpha$ value will lead to a drastically increased value for $k$ increasing the corresponding runtime. 
+Thus we have a method of estimating the true approximately sorted value of the given list. However, our sample size depends on an unknown value $\beta$. From our third assumption we approximate $\beta$ with $\alpha$ which is known from the specification of the algorithm. A lower $\alpha$ value will lead to a drastically increased value for $k$ increasing the corresponding runtime. This can be seen in Figure 1.
 
 This leaves us with $$k \geq \frac{4}{\epsilon^2 \alpha} \ln \frac{2}{\delta}$$ where we commonly use $\alpha = .9$ for testing the algorithm. It is rather important to note that $k$ is not dependent on $n$ in any way. Thus this algorithm scales well, especially on larger inputs.
 
 The algorithm produces two-sided error however. Going back to our probabilistic bounds, the probability that the algorithm yields an $\alpha$-estimate that is within $\epsilon$ of $\beta$ is $1 - \delta$. We can then compare the produced $\alpha$-estimate to the verification metric ($\alpha$) provided from the onset. 
 
-The algorithm though, needs to verify whether or not a list is $\alpha$AS. This can be done by requiring a small $\epsilon$ to tighten the window for our $\alpha$-estimate. The $\alpha$-estimate can also be tightened by boosting the algorithm with multiple iterations. By running the algorithm $i$ times, we see that the probability that $\alpha$-estimate is within $\epsilon$ of $\beta$ is $1 - \delta^i$. Depending on the relaxation of runtime, the result can be boosted to the desired constant. Even with large $\delta$ values, (such as $\delta = .25$) the rate at which $1 - \delta^i$ converges to $1$ is very fast. Thus not many iterations are required. This leads to a very confident result rather quickly.
+The algorithm though, needs to verify whether or not a list is $\alpha$AS. This can be done by requiring a small $\epsilon$ to tighten the window for our $\alpha$-estimate. The $\alpha$-estimate can also be tightened by boosting the algorithm with multiple iterations. By running the algorithm $i$ times, we see that the probability that $\alpha$-estimate is within $\epsilon$ of $\beta$ is $1 - \delta^i$. Depending on the relaxation of runtime, the result can be boosted to the desired constant. Even with large $\delta$ values, (such as $\delta = .25$) the rate at which $1 - \delta^i$ converges to $1$ is very fast. Thus not many iterations are required; these results can be seen in Figure 2. This leads to a very confident result rather quickly.
 
 \section{Experimental Analysis}
 
-sdfsd
+We developed Python code to do some simple testing of our algorithm. The code repository can be found here: \url{https://github.com/celic/alpha-sort.git}. To begin testing, we generated four different datasets of one billion numbers with $\beta \approx 0.9$. Warning: Given that we pad each number for easier seeking, generating each file to approximately 90 minutes and took up 11GB. 
 
+First, we tested the consistency of the program. We ran 1000 simulations with $\epsilon=0.1, \delta=0.25, \alpha=\beta$, and with only one iteration. We expect 75\% of the simulations to result with $\alpha$-estimates within the error bound. The largest error noticed was $0.03915446$, which is still within $\epsilon$. Why were none of the test cases outside of the error bound?We repeated this with several other sets of values, and the results always reflected the expected values.
+
+Then we tested changing $\alpha$. The goal here was to test where $\alpha \approx \beta$ becomes $\alpha \not\approx \beta$.
+
+Finally, there 
 \section{Conclusion}
 
 This algorithm performs surprisingly well for how simple it is in design. By pulling $k$ samples from the $n$ sized list and predicting the $\beta$ value for the list we end up with a very accurate verification algorithm based on $\alpha$. It is important to note that the size of $k$ does not scale with $n$ which is a very pleasing result. This allows the size of the list to potentially be unlimited in size.  
 
+\newpage
+\begin{appendices}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\linewidth]{fig1.png}
+	\caption{How the sample size (k) is affected by the value of $\alpha$.		
+		This shows that the sample size grows exponentially as $\alpha$ decreases. This one of the reasons for assumption three.
+		Note: $\epsilon=0.05$ and $\delta=0.05$.}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\linewidth]{fig2.png}
+	\caption{The confidence that the $\alpha$-estimate is within the error bound $\epsilon$ by the number of iterations. Each line represents a different $\delta$ value. This Figure demonstrates how even with very large (and impractical) values of $\delta$, it still takes a very small amount of iterations to have nearly full confidence that the result is within the $\epsilon$ bound.}
+\end{figure}
+\end{appendices}
+
+\newpage
 \addcontentsline{toc}{section}{References}
 \begin{thebibliography}{2}
 
