@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath, geometry, enumerate, algorithm2e}
 \usepackage{graphicx}
-\usepackage[toc]{hyperref}
+\usepackage{hyperref}
 \usepackage[toc,page]{appendix}
 \geometry{margin=1.5in}
 \setlength{\textheight}{8.75in} \setlength{\topmargin}{-.2in}
@@ -127,11 +127,10 @@ The algorithm though, needs to verify whether or not a list is $\alpha$AS. This 
 
 We developed Python code to do some simple testing of our algorithm. The code repository can be found here: \url{https://github.com/celic/alpha-sort.git}. To begin testing, we generated four different datasets of one billion numbers with $\beta \approx 0.9$. Warning: Given that we pad each number for easier seeking, generating each file to approximately 90 minutes and took up 11GB. 
 
-First, we tested the consistency of the program. We ran 1000 simulations with $\epsilon=0.1, \delta=0.25, \alpha=\beta$, and with only one iteration. We expect 75\% of the simulations to result with $\alpha$-estimates within the error bound. The largest error noticed was $0.03915446$, which is still within $\epsilon$. Why were none of the test cases outside of the error bound?We repeated this with several other sets of values, and the results always reflected the expected values.
+First, we tested the consistency of the program. We ran 1000 simulations with $\epsilon=0.1, \delta=0.25, \alpha=\beta$, and with only one iteration. We expect 75\% of the simulations to result with $\alpha$-estimates within the error bound. The largest error noticed was $0.039$, which is well within $\epsilon$. We repeated this with several other sets of values, and the results always seemed to be within the bounds. We are unsure as to why this occurred exactly.
 
-Then we tested changing $\alpha$. The goal here was to test where $\alpha \approx \beta$ becomes $\alpha \not\approx \beta$.
+Performance wise, the code executed very quickly. For any practical set of values, using just one iteration (i.e. no boosting), computing the algorithm ran in just a fraction of a second. Worst case, with 16 iterations, it still only took a few seconds. On top of this, on average over 95\% of execution time was spent doing I/O. This makes sense as I/O is much slower, and $2k$ numbers need to be read, whereas only $k$ calculations are performed (and are much faster). However, if this algorithm was put into production, it would be trivial to parallelize the I/O, providing significant performance boosts to our already very fast algorithm. Overall, we did not perform extensive testing, but from the results so far, our approach seems very promising.
 
-Finally, there 
 \section{Conclusion}
 
 This algorithm performs surprisingly well for how simple it is in design. By pulling $k$ samples from the $n$ sized list and predicting the $\beta$ value for the list we end up with a very accurate verification algorithm based on $\alpha$. It is important to note that the size of $k$ does not scale with $n$ which is a very pleasing result. This allows the size of the list to potentially be unlimited in size.  
@@ -141,7 +140,7 @@ This algorithm performs surprisingly well for how simple it is in design. By pul
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.9\linewidth]{fig1.png}
+	\includegraphics[width=0.7\linewidth]{fig1.png}
 	\caption{How the sample size (k) is affected by the value of $\alpha$.		
 		This shows that the sample size grows exponentially as $\alpha$ decreases. This one of the reasons for assumption three.
 		Note: $\epsilon=0.05$ and $\delta=0.05$.}
@@ -149,7 +148,7 @@ This algorithm performs surprisingly well for how simple it is in design. By pul
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.9\linewidth]{fig2.png}
+	\includegraphics[width=0.7\linewidth]{fig2.png}
 	\caption{The confidence that the $\alpha$-estimate is within the error bound $\epsilon$ by the number of iterations. Each line represents a different $\delta$ value. This Figure demonstrates how even with very large (and impractical) values of $\delta$, it still takes a very small amount of iterations to have nearly full confidence that the result is within the $\epsilon$ bound.}
 \end{figure}
 \end{appendices}
