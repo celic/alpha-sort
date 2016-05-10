@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath, geometry, enumerate, algorithm2e}
 \usepackage{graphicx}
+\usepackage{hyperref}
 \usepackage[toc,page]{appendix}
 \geometry{margin=1.5in}
 \setlength{\textheight}{8.75in} \setlength{\topmargin}{-.2in}
@@ -110,21 +111,23 @@ Remember that the random variables $X_i$ have the Bernoulli distribution with pa
 
 Using the Estimator Theorem from Motwani and Raghavan \cite{textbook}, with $\beta$ being the ratio of sorted elements to total elements, the Monte Carlo method yields an $\epsilon$-approximation to the number of sorted elements with probability at least $1-\delta$ given a sample size of size $$k \geq \frac{4}{\epsilon^2 \beta} \ln \frac{2}{\delta}.$$ 
 
-The result of this theorem is a bound on $E[X]$ as $$\Pr\left[ [(1-\epsilon)\beta n] \leq E[X] \leq [(1+\epsilon)\beta n] \right] \leq 1 - \delta.$$ where $\beta n$ refers to the true number of sorted pairs. 
+The result of this theorem is a bound on $E[X]$ as $$\Pr\left[ [(1-\epsilon)\beta n] \leq E[X] \leq Pr[(1+\epsilon)\beta n] \right] \leq 1 - \delta.$$ where $\beta n$ refers to the true number of sorted pairs. 
 
-We can simplify this further by removing the factor of $n$ from each term to yield $$\Pr\left[ [(1-\epsilon)\beta] \leq \alpha \leq [(1+\epsilon)\beta] \right] \leq 1 - \delta.$$
+We can simplify this further by removing the factor of $n$ from each term to yield $$\Pr\left[ [(1-\epsilon)\beta] \leq \alpha \leq Pr[(1+\epsilon)\beta] \right] \leq 1 - \delta.$$
 
 Thus we have a method of estimating the true approximately sorted value of the given list. However, our sample size depends on an unknown value $\beta$. From our third assumption we approximate $\beta$ with $\alpha$ which is known from the specification of the algorithm. A lower $\alpha$ value will lead to a drastically increased value for $k$ increasing the corresponding runtime. This can be seen in Figure 1.
 
 This leaves us with $$k \geq \frac{4}{\epsilon^2 \alpha} \ln \frac{2}{\delta}$$ where we commonly use $\alpha = .9$ for testing the algorithm. It is rather important to note that $k$ is not dependent on $n$ in any way. Thus this algorithm scales well, especially on larger inputs.
 
-The algorithm produces two-sided error however. Going back to our probabilistic bounds, the probability that the algorithm yields an $\alpha$-estimate that is within $\epsilon$ of $\beta$ is $1 - \delta$. We can then compare the produced $\alpha$-estimate to the verification metric ($\alpha$) provided from the onset. 
+The algorithm produces two-sided error however. Going back to our probabilistic bounds, the probability that the algorithm yields an $\alpha$-estimate that is within $\epsilon$ of $\beta$ is $1 - \delta$ (Note: $\epsilon$ needs to stay relatively low, to satisfy the third assumption and for $\alpha \approx \beta$). We can then compare the produced $\alpha$-estimate to the verification metric ($\alpha$) provided from the onset. 
 
 The algorithm though, needs to verify whether or not a list is $\alpha$AS. This can be done by requiring a small $\epsilon$ to tighten the window for our $\alpha$-estimate. The $\alpha$-estimate can also be tightened by boosting the algorithm with multiple iterations. By running the algorithm $i$ times, we see that the probability that $\alpha$-estimate is within $\epsilon$ of $\beta$ is $1 - \delta^i$. Depending on the relaxation of runtime, the result can be boosted to the desired constant. Even with large $\delta$ values, (such as $\delta = .25$) the rate at which $1 - \delta^i$ converges to $1$ is very fast. Thus not many iterations are required; these results can be seen in Figure 2. This leads to a very confident result rather quickly.
 
 \section{Experimental Analysis}
 
-We developed Python code to do some simple testing of our algorithm. The code repository can be found here: \textbf{https://github.com/celic/alpha-sort}. To begin testing, we generated four different datasets of one billion numbers with $\beta \approx 0.9$. Warning: Given that we pad each number for easier seeking, generating each file to approximately 90 minutes and took up 11GB. 
+We developed Python code to do some simple testing of our algorithm. The code repository can be found here: \url{https://github.com/celic/alpha-sort.git}. To begin testing, we generated four different datasets of one billion numbers with $\beta \approx 0.9$. Warning: Given that we pad each number for easier seeking, generating each file to approximately 90 minutes and took up 11GB. 
+
+We tested a couple of different scenarios on sets of 1000 simulations. In general, it seemed like our algorithm was extremely accurate and in general very promising. However, we noticed an oddity when testing the consistency of the program. We ran 1000 simulations with $\epsilon=0.1, \delta=0.1, \alpha=\beta$, and with 1 iteration. We expect 75\% of the simulations to result with $\alpha$-estimates within the error bound; and 25\% to be outside $\epsilon$. The largest error noticed was $0.039$, which is well within $\epsilon$. We repeated this with several other sets of values, and the results always seemed to be within the bounds. We are unsure as to why this occurred exactly; perhaps $1 - \delta^i$ ends up being a very loose bound of $Pr[(1+\epsilon)\beta n]$. This could mean for the same confidence the error bounds are actually significantly stricter/smaller than what we initially thought. This doesn't overly matter, as the confidence still converges to one after a couple of boosting iterations. Given the chance we would investigate this further, the question came up towards the end of the assignment.
 
 First, we tested the consistency of the program. We ran 1000 simulations with $\epsilon=0.1, \delta=0.25, \alpha=\beta$, and with only one iteration. We expect 75\% of the simulations to result with $\alpha$-estimates within the error bound. The largest error noticed was $0.039$, which is well within $\epsilon$. We repeated this with several other sets of values, and the results always seemed to be within the bounds. We are unsure as to why this occurred exactly.
 
@@ -135,7 +138,6 @@ Performance wise, the code executed very quickly. For any practical set of value
 This algorithm performs surprisingly well for how simple it is in design. By pulling $k$ samples from the $n$ sized list and predicting the $\beta$ value for the list we end up with a very accurate verification algorithm based on $\alpha$. It is important to note that the size of $k$ does not scale with $n$ which is a very pleasing result. This allows the size of the list to potentially be unlimited in size.  
 
 \newpage
-\addcontentsline{toc}{section}{Appendix}
 \begin{appendices}
 
 \begin{figure}[h!]
