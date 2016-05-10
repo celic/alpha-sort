@@ -1,7 +1,6 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath, geometry, enumerate, algorithm2e}
 \usepackage{graphicx}
-\usepackage{hyperref}
 \usepackage[toc,page]{appendix}
 \geometry{margin=1.5in}
 \setlength{\textheight}{8.75in} \setlength{\topmargin}{-.2in}
@@ -125,7 +124,7 @@ The algorithm though, needs to verify whether or not a list is $\alpha$AS. This 
 
 \section{Experimental Analysis}
 
-We developed Python code to do some simple testing of our algorithm. The code repository can be found here: \url{https://github.com/celic/alpha-sort.git}. To begin testing, we generated four different datasets of one billion numbers with $\beta \approx 0.9$. Warning: Given that we pad each number for easier seeking, generating each file to approximately 90 minutes and took up 11GB. 
+We developed Python code to do some simple testing of our algorithm. The code repository can be found here: \textbf{https://github.com/celic/alpha-sort}. To begin testing, we generated four different datasets of one billion numbers with $\beta \approx 0.9$. Warning: Given that we pad each number for easier seeking, generating each file to approximately 90 minutes and took up 11GB. 
 
 First, we tested the consistency of the program. We ran 1000 simulations with $\epsilon=0.1, \delta=0.25, \alpha=\beta$, and with only one iteration. We expect 75\% of the simulations to result with $\alpha$-estimates within the error bound. The largest error noticed was $0.039$, which is well within $\epsilon$. We repeated this with several other sets of values, and the results always seemed to be within the bounds. We are unsure as to why this occurred exactly.
 
@@ -136,6 +135,7 @@ Performance wise, the code executed very quickly. For any practical set of value
 This algorithm performs surprisingly well for how simple it is in design. By pulling $k$ samples from the $n$ sized list and predicting the $\beta$ value for the list we end up with a very accurate verification algorithm based on $\alpha$. It is important to note that the size of $k$ does not scale with $n$ which is a very pleasing result. This allows the size of the list to potentially be unlimited in size.  
 
 \newpage
+\addcontentsline{toc}{section}{Appendix}
 \begin{appendices}
 
 \begin{figure}[h!]
