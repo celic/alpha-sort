@@ -125,17 +125,19 @@ The algorithm though, needs to verify whether or not a list is $\alpha$AS. This 
 
 \section{Experimental Analysis}
 
-We developed Python code to do some simple testing of our algorithm. The code repository can be found here: \url{https://github.com/celic/alpha-sort.git}. To begin testing, we generated four different datasets of one billion numbers with $\beta \approx 0.9$. Warning: Given that we pad each number for easier seeking, generating each file to approximately 90 minutes and took up 11GB. 
+We developed Python code to do some simple testing of our algorithm. The code repository can be found here: \url{https://github.com/celic/alpha-sort}. To begin testing, we generated four different datasets of one billion numbers with $\beta \approx 0.9$. Warning: Given that we pad each number for easier seeking, generating each file took approximately 90 minutes and was 11GB in size. 
 
 We tested a couple of different scenarios on sets of 1000 simulations. In general, it seemed like our algorithm was extremely accurate and in general very promising. However, we noticed an oddity when testing the consistency of the program. We ran 1000 simulations with $\epsilon=0.1, \delta=0.1, \alpha=\beta$, and with 1 iteration. We expect 75\% of the simulations to result with $\alpha$-estimates within the error bound; and 25\% to be outside $\epsilon$. The largest error noticed was $0.039$, which is well within $\epsilon$. We repeated this with several other sets of values, and the results always seemed to be within the bounds. We are unsure as to why this occurred exactly; perhaps $1 - \delta^i$ ends up being a very loose bound of $Pr[(1+\epsilon)\beta n]$. This could mean for the same confidence the error bounds are actually significantly stricter/smaller than what we initially thought. This doesn't overly matter, as the confidence still converges to one after a couple of boosting iterations. Given the chance we would investigate this further, the question came up towards the end of the assignment.
-
-First, we tested the consistency of the program. We ran 1000 simulations with $\epsilon=0.1, \delta=0.25, \alpha=\beta$, and with only one iteration. We expect 75\% of the simulations to result with $\alpha$-estimates within the error bound. The largest error noticed was $0.039$, which is well within $\epsilon$. We repeated this with several other sets of values, and the results always seemed to be within the bounds. We are unsure as to why this occurred exactly.
 
 Performance wise, the code executed very quickly. For any practical set of values, using just one iteration (i.e. no boosting), computing the algorithm ran in just a fraction of a second. Worst case, with 16 iterations, it still only took a few seconds. On top of this, on average over 95\% of execution time was spent doing I/O. This makes sense as I/O is much slower, and $2k$ numbers need to be read, whereas only $k$ calculations are performed (and are much faster). However, if this algorithm was put into production, it would be trivial to parallelize the I/O, providing significant performance boosts to our already very fast algorithm. Overall, we did not perform extensive testing, but from the results so far, our approach seems very promising.
 
 \section{Conclusion}
 
 This algorithm performs surprisingly well for how simple it is in design. By pulling $k$ samples from the $n$ sized list and predicting the $\beta$ value for the list we end up with a very accurate verification algorithm based on $\alpha$. It is important to note that the size of $k$ does not scale with $n$ which is a very pleasing result. This allows the size of the list to potentially be unlimited in size.  
+
+The experimental results were exceedingly successful yielding even smaller bounds than were theoretically expected. Again this result can be improved even more with boosting. In practice, the algorithm could be greatly improved with a parallelized implementation as the majority of the computation time was spent reading the values from the file. 
+
+With more time and resources (especially CPU speed and HDD size) we would test the algorithm on more varied data sets to reveal a bit more about the nature of the algorithm. This perhaps would clear up the questions surrounding the extremely tight bounds on predicting $\alpha$ as well. 
 
 \newpage
 \begin{appendices}
